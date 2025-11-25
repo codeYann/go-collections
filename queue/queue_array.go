@@ -9,13 +9,17 @@ type Queue[T any] struct {
 	arr      []T
 }
 
-func NewQueue[T any](size uint) *Queue[T] {
+func NewQueue[T any](size uint) (*Queue[T], error) {
+	if size == 0 {
+		return nil, errors.New("size must be greater than 0")
+	}
+
 	return &Queue[T]{
 		capacity: size,
 		front:    0,
 		rear:     0,
 		arr:      make([]T, size),
-	}
+	}, nil
 }
 
 func (q Queue[T]) IsEmpty() bool {

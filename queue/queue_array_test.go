@@ -5,7 +5,7 @@ import (
 )
 
 func TestNewQueue(t *testing.T) {
-	queue := NewQueue[int](5)
+	queue, _ := NewQueue[int](5)
 	if queue == nil {
 		t.Fatal("NewQueue returned nil")
 	}
@@ -27,10 +27,18 @@ func TestNewQueue(t *testing.T) {
 	if len(queue.arr) != 5 {
 		t.Errorf("Expected array length 5, got %d", len(queue.arr))
 	}
+
+	queue, err := NewQueue[int](0)
+	if err == nil {
+		t.Fatal("Expected error when creating queue with size 0")
+	}
+	if queue != nil {
+		t.Error("Expected nil queue when size is 0")
+	}
 }
 
 func TestIsEmpty(t *testing.T) {
-	queue := NewQueue[int](3)
+	queue, _ := NewQueue[int](3)
 	if !queue.IsEmpty() {
 		t.Error("Expected empty queue to return true for IsEmpty")
 	}
@@ -47,7 +55,7 @@ func TestIsEmpty(t *testing.T) {
 }
 
 func TestIsFull(t *testing.T) {
-	queue := NewQueue[int](3)
+	queue, _ := NewQueue[int](3)
 	if queue.IsFull() {
 		t.Error("Expected non-full queue to return false for IsFull")
 	}
@@ -66,7 +74,7 @@ func TestIsFull(t *testing.T) {
 }
 
 func TestEnqueue(t *testing.T) {
-	queue := NewQueue[int](3)
+	queue, _ := NewQueue[int](3)
 
 	// Enqueue first element
 	err := queue.Enqueue(10)
@@ -103,7 +111,7 @@ func TestEnqueue(t *testing.T) {
 }
 
 func TestDequeue(t *testing.T) {
-	queue := NewQueue[int](3)
+	queue, _ := NewQueue[int](3)
 
 	// Try to dequeue from empty queue
 	_, err := queue.Dequeue()
@@ -155,7 +163,7 @@ func TestDequeue(t *testing.T) {
 }
 
 func TestPeek(t *testing.T) {
-	queue := NewQueue[int](3)
+	queue, _ := NewQueue[int](3)
 
 	// Try to peek from empty queue
 	_, err := queue.Peek()
@@ -192,7 +200,7 @@ func TestPeek(t *testing.T) {
 }
 
 func TestFIFOOrder(t *testing.T) {
-	queue := NewQueue[int](5)
+	queue, _ := NewQueue[int](5)
 
 	// Enqueue multiple elements
 	values := []int{1, 2, 3, 4}
@@ -221,7 +229,7 @@ func TestFIFOOrder(t *testing.T) {
 }
 
 func TestCircularWrapping(t *testing.T) {
-	queue := NewQueue[int](3)
+	queue, _ := NewQueue[int](3)
 
 	// Fill queue (capacity-1 = 2 elements)
 	queue.Enqueue(1)
@@ -256,7 +264,7 @@ func TestCircularWrapping(t *testing.T) {
 }
 
 func TestIntegration(t *testing.T) {
-	queue := NewQueue[int](5)
+	queue, _ := NewQueue[int](5)
 
 	// Enqueue multiple elements
 	values := []int{1, 2, 3, 4}
@@ -299,7 +307,7 @@ func TestIntegration(t *testing.T) {
 }
 
 func TestEnqueueDequeueSequence(t *testing.T) {
-	queue := NewQueue[int](4)
+	queue, _ := NewQueue[int](4)
 
 	// Enqueue, dequeue, enqueue, dequeue sequence
 	queue.Enqueue(1)
@@ -326,7 +334,7 @@ func TestEnqueueDequeueSequence(t *testing.T) {
 }
 
 func TestStringType(t *testing.T) {
-	queue := NewQueue[string](3)
+	queue, _ := NewQueue[string](3)
 
 	queue.Enqueue("hello")
 	queue.Enqueue("world")
@@ -361,7 +369,7 @@ func TestStringType(t *testing.T) {
 }
 
 func TestCapacityOne(t *testing.T) {
-	queue := NewQueue[int](1)
+	queue, _ := NewQueue[int](1)
 
 	if !queue.IsEmpty() {
 		t.Error("Queue should be empty initially")
@@ -383,7 +391,7 @@ func TestCapacityOne(t *testing.T) {
 }
 
 func TestCapacityTwo(t *testing.T) {
-	queue := NewQueue[int](2)
+	queue, _ := NewQueue[int](2)
 
 	if !queue.IsEmpty() {
 		t.Error("Queue should be empty initially")
@@ -417,7 +425,7 @@ func TestCapacityTwo(t *testing.T) {
 }
 
 func TestMultipleWraps(t *testing.T) {
-	queue := NewQueue[int](3)
+	queue, _ := NewQueue[int](3)
 
 	// Fill and empty multiple times to test wrapping
 	for round := 0; round < 3; round++ {
