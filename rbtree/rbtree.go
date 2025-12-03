@@ -31,7 +31,7 @@ func NewNode[T any](val T) *Node[T] {
 // NewTree creates and returns a new red-black tree with the specified comparator function.
 func NewTree[T any](cmp Comparator[T]) *Tree[T] {
 	var Nil *Node[T] = &Node[T]{Color: 'B'} // define a sentinel Nil node
-	return &Tree[T]{Root: nil, Comparator: cmp, Nil: Nil}
+	return &Tree[T]{Root: Nil, Comparator: cmp, Nil: Nil}
 }
 
 // RotateLeft performs a left rotation on the given node x.
@@ -123,7 +123,7 @@ func (t *Tree[T]) insertFixup(z *Node[T]) {
 func (t *Tree[T]) Insert(elem T) {
 	node := NewNode(elem)
 
-	if t.Root == nil {
+	if t.Root == t.Nil {
 		t.Root = node
 		t.Root.Color = 'B'
 		t.Root.Parent = t.Nil
@@ -216,9 +216,9 @@ func (t *Tree[T]) Size(node *Node[T]) int {
 	return 1 + t.Size(node.Left) + t.Size(node.Right)
 }
 
-// Sucessor finds and returns the successor of the given node in the red-black tree.
+// Successor finds and returns the successor of the given node in the red-black tree.
 // The successor is the node with the smallest value greater than the given node's value.
-func (t *Tree[T]) Sucessor(node *Node[T]) *Node[T] {
+func (t *Tree[T]) Successor(node *Node[T]) *Node[T] {
 	if node.Right != t.Nil {
 		return t.Minimum(node.Right)
 	}
