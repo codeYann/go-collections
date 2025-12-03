@@ -1,5 +1,8 @@
 package rbtree
 
+// Node represents a node in the red-black tree.
+// It holds a value of generic type T and pointers to its parent, left, and right children.
+// The Color field indicates whether the node is red ('R') or black ('B').
 type Node[T any] struct {
 	Val    T
 	Left   *Node[T]
@@ -8,23 +11,31 @@ type Node[T any] struct {
 	Color  byte // 'R' for Red, 'B' for Black
 }
 
+// Comparator defines a function type for comparing two values of type T.
+// It returns a negative value if a < b, zero if a == b, and a positive value if a > b.
 type Comparator[T any] func(a, b T) int
 
+// Tree represents a red-black tree data structure.
+// It maintains the root node, a comparator function, and a sentinel Nil node.
 type Tree[T any] struct {
 	Root       *Node[T]
 	Comparator Comparator[T]
 	Nil        *Node[T]
 }
 
+// NewNode creates and returns a new red node with the given value.
 func NewNode[T any](val T) *Node[T] {
 	return &Node[T]{Val: val, Color: 'R'}
 }
 
+// NewTree creates and returns a new red-black tree with the specified comparator function.
 func NewTree[T any](cmp Comparator[T]) *Tree[T] {
 	var Nil *Node[T] = &Node[T]{Color: 'B'} // define a sentinel Nil node
 	return &Tree[T]{Root: nil, Comparator: cmp, Nil: Nil}
 }
 
+// RotateLeft performs a left rotation on the given node x.
+// This operation maintains the red-black tree properties.
 func (t *Tree[T]) RotateLeft(x *Node[T]) {
 	y := x.Right
 	x.Right = y.Left
@@ -43,6 +54,8 @@ func (t *Tree[T]) RotateLeft(x *Node[T]) {
 	x.Parent = y
 }
 
+// RotateRight performs a right rotation on the given node y.
+// This operation maintains the red-black tree properties.
 func (t *Tree[T]) RotateRight(y *Node[T]) {
 	x := y.Left
 	y.Left = x.Right
@@ -106,6 +119,7 @@ func (t *Tree[T]) insertFixup(z *Node[T]) {
 	t.Root.Color = 'B'
 }
 
+// Insert adds a new element to the red-black tree while maintaining its properties.
 func (t *Tree[T]) Insert(elem T) {
 	node := NewNode(elem)
 
@@ -147,6 +161,8 @@ func (t *Tree[T]) Insert(elem T) {
 	t.insertFixup(node)
 }
 
+// Search looks for a node with the specified value in the red-black tree.
+// It returns the node if found, or the sentinel Nil node if not found.
 func (t *Tree[T]) Search(elem T) *Node[T] {
 	current := t.Root
 
@@ -165,6 +181,7 @@ func (t *Tree[T]) Search(elem T) *Node[T] {
 	return t.Nil
 }
 
+// Minimum finds and returns the node with the smallest value in the subtree rooted at the given node.
 func (t *Tree[T]) Minimum(node *Node[T]) *Node[T] {
 	current := node
 	for current.Left != t.Nil {
@@ -173,6 +190,7 @@ func (t *Tree[T]) Minimum(node *Node[T]) *Node[T] {
 	return current
 }
 
+// Maximum finds and returns the node with the largest value in the subtree rooted at the given node.
 func (t *Tree[T]) Maximum(node *Node[T]) *Node[T] {
 	current := node
 	for current.Right != t.Nil {
@@ -181,6 +199,8 @@ func (t *Tree[T]) Maximum(node *Node[T]) *Node[T] {
 	return current
 }
 
+// Height calculates and returns the height of the subtree rooted at the given node.
+// The height of a tree with only the Nil node is -1.
 func (t *Tree[T]) Height(node *Node[T]) int {
 	if node == t.Nil {
 		return -1
@@ -188,6 +208,7 @@ func (t *Tree[T]) Height(node *Node[T]) int {
 	return 1 + max(t.Height(node.Left), t.Height(node.Right))
 }
 
+// Size calculates and returns the number of nodes in the subtree rooted at the given node.
 func (t *Tree[T]) Size(node *Node[T]) int {
 	if node == t.Nil {
 		return 0
@@ -195,6 +216,8 @@ func (t *Tree[T]) Size(node *Node[T]) int {
 	return 1 + t.Size(node.Left) + t.Size(node.Right)
 }
 
+// Sucessor finds and returns the successor of the given node in the red-black tree.
+// The successor is the node with the smallest value greater than the given node's value.
 func (t *Tree[T]) Sucessor(node *Node[T]) *Node[T] {
 	if node.Right != t.Nil {
 		return t.Minimum(node.Right)
@@ -209,6 +232,8 @@ func (t *Tree[T]) Sucessor(node *Node[T]) *Node[T] {
 	return parent
 }
 
+// Predecessor finds and returns the predecessor of the given node in the red-black tree.
+// The predecessor is the node with the largest value less than the given node's value.
 func (t *Tree[T]) Predecessor(node *Node[T]) *Node[T] {
 	if node.Left != t.Nil {
 		return t.Maximum(node.Left)
@@ -223,6 +248,8 @@ func (t *Tree[T]) Predecessor(node *Node[T]) *Node[T] {
 	return parent
 }
 
+// Remove deletes a node with the specified value from the red-black tree.
+// This method is not yet implemented.
 func (t *Tree[T]) Remove(elem T) {
 	panic("Not implemented")
 }
