@@ -82,7 +82,7 @@ func TestSize(t *testing.T) {
 	}
 }
 
-func TestSucessor(t *testing.T) {
+func TestSuccessor(t *testing.T) {
 	cmp := func(a, b int) int {
 		return a - b
 	}
@@ -94,27 +94,27 @@ func TestSucessor(t *testing.T) {
 	tree.Insert(7)
 
 	node := tree.Search(5)
-	succ := tree.Sucessor(node)
-	if succ == nil || succ.Val != 7 {
-		t.Errorf("Expected successor of 5 to be 7, got %v", succ)
+	successor := tree.Successor(node)
+	if successor == nil || successor.Val != 7 {
+		t.Errorf("Expected successor of 5 to be 7, got %v", successor)
 	}
 
 	node = tree.Search(10)
-	succ = tree.Sucessor(node)
-	if succ == nil || succ.Val != 15 {
-		t.Errorf("Expected successor of 10 to be 15, got %v", succ)
+	successor = tree.Successor(node)
+	if successor == nil || successor.Val != 15 {
+		t.Errorf("Expected successor of 10 to be 15, got %v", successor)
 	}
 
 	node = tree.Search(3)
-	succ = tree.Sucessor(node)
-	if succ == nil || succ.Val != 5 {
-		t.Errorf("Expected successor of 3 to be 5, got %v", succ)
+	successor = tree.Successor(node)
+	if successor == nil || successor.Val != 5 {
+		t.Errorf("Expected successor of 3 to be 5, got %v", successor)
 	}
 
 	node = tree.Search(7)
-	succ = tree.Sucessor(node)
-	if succ == nil || succ.Val != 10 {
-		t.Errorf("Expected successor of 7 to be 10, got %v", succ)
+	successor = tree.Successor(node)
+	if successor == nil || successor.Val != 10 {
+		t.Errorf("Expected successor of 7 to be 10, got %v", successor)
 	}
 }
 
