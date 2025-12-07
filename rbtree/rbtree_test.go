@@ -150,7 +150,7 @@ func TestRBTreeRemove(t *testing.T) {
 	if node.Color != 'B' {
 		t.Errorf("Expected node with value 15 to be Black, got %c", node.Color)
 	}
-	if node.Left != tree.Nil && node.Right != tree.Nil {
+	if !(node.Left == tree.Nil && node.Right == tree.Nil) {
 		t.Errorf("Expected node with value 15 to have no children")
 	}
 
@@ -158,7 +158,7 @@ func TestRBTreeRemove(t *testing.T) {
 		t.Errorf("Expected left child of root to be node with value 15")
 	}
 
-	// // Test removing a node with two children
+	// Test removing a node with two children
 	tree.Remove(30)
 	node = tree.Search(30)
 	if node != tree.Nil {
@@ -186,7 +186,7 @@ func TestRBTreeRemove(t *testing.T) {
 		t.Errorf("Expected left child of node with value 35 to be 25")
 	}
 
-	// // Verify remaining nodes are still searchable
+	// Verify remaining nodes are still searchable
 	expectedRemaining := []int{20, 15, 35, 25}
 	for _, v := range expectedRemaining {
 		node := tree.Search(v)
@@ -208,11 +208,11 @@ func TestRBTreeRemove(t *testing.T) {
 		t.Errorf("Expected to find node with value 25 after removing root")
 	}
 
-	if node.Left.Val != 15 {
+	if node.Left == tree.Nil || node.Left.Val != 15 {
 		t.Errorf("Expected left child of new root to be 15")
 	}
 
-	if node.Right.Val != 35 {
+	if node.Right == tree.Nil || node.Right.Val != 35 {
 		t.Errorf("Expected right child of new root to be 35")
 	}
 
