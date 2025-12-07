@@ -31,6 +31,9 @@ func NewNode[T any](val T) *Node[T] {
 // NewTree creates and returns a new red-black tree with the specified comparator function.
 func NewTree[T any](cmp Comparator[T]) *Tree[T] {
 	var Nil *Node[T] = &Node[T]{Color: 'B'} // define a sentinel Nil node
+	Nil.Parent = Nil
+	Nil.Left = Nil
+	Nil.Right = Nil
 	return &Tree[T]{Root: Nil, Comparator: cmp, Nil: Nil}
 }
 
@@ -76,6 +79,9 @@ func (t *Tree[T]) RotateRight(y *Node[T]) {
 	y.Parent = x
 }
 
+// insertFixup restores red-black tree properties after insertion.
+// It handles violations of the red-black properties by recoloring nodes and performing rotations.
+// The function continues until the tree satisfies all red-black properties.
 func (t *Tree[T]) insertFixup(z *Node[T]) {
 	for z.Parent != t.Nil && z.Parent.Color == 'R' {
 		if z.Parent.Parent == t.Nil {
@@ -248,8 +254,138 @@ func (t *Tree[T]) Predecessor(node *Node[T]) *Node[T] {
 	return parent
 }
 
+// transplant replaces the subtree rooted at node u with the subtree rooted at node v.
+// This is a helper function used during node removal to replace one node with another.
+// The parent pointers are updated accordingly, but the children of v are not modified.
+func (t *Tree[T]) transplant(u, v *Node[T]) {
+	if u.Parent == t.Nil {
+		t.Root = v
+	} else if u == u.Parent.Left {
+		u.Parent.Left = v
+	} else {
+		u.Parent.Right = v
+	}
+	v.Parent = u.Parent
+}
+
+// removeFixup restores red-black tree properties after a node removal.
+// When a black node is removed, it may violate the black-height property.
+// This function rebalances the tree through recoloring and rotations to maintain all red-black properties.
+// It handles four cases for each side (left and right) of the tree.
+func (t *Tree[T]) removeFixup(x *Node[T]) {
+	for x != t.Root && x != t.Nil && x.Color == 'B' {
+		if x == x.Parent.Left {
+			w := x.Parent.Right
+			// Case 1: w is red
+			if w.Color == 'R' {
+				w.Color = 'B'
+				x.Parent.Color = 'R'
+				t.RotateLeft(x.Parent)
+				w = x.Parent.Right
+			}
+
+			// Case 2: w is black and both of w's children are black
+			if w.Left.Color == 'B' && w.Right.Color == 'B' {
+				w.Color = 'R'
+				x = x.Parent
+			} else {
+				// Case 3: w is black, w's right child is black, w's left child is red
+				if w.Right.Color == 'B' {
+					if w.Left != t.Nil {
+						w.Left.Color = 'B'
+					}
+					w.Color = 'R'
+					t.RotateRight(w)
+					w = x.Parent.Right
+				}
+				// Case 4: w is black, w's right child is red
+				w.Color = x.Parent.Color
+				x.Parent.Color = 'B'
+				if w.Right != t.Nil {
+					w.Right.Color = 'B'
+				}
+				t.RotateLeft(x.Parent)
+				x = t.Root
+			}
+		} else {
+			w := x.Parent.Left
+			// Case 1: w is red
+			if w.Color == 'R' {
+				w.Color = 'B'
+				x.Parent.Color = 'R'
+				t.RotateRight(x.Parent)
+				w = x.Parent.Left
+			}
+
+			// Case 2: w is black and both of w's children are black
+			if w.Right.Color == 'B' && w.Left.Color == 'B' {
+				w.Color = 'R'
+				x = x.Parent
+			} else {
+				// Case 3: w is black, w's left child is black, w's right child is red
+				if w.Left.Color == 'B' {
+					if w.Right != t.Nil {
+						w.Right.Color = 'B'
+					}
+					w.Color = 'R'
+					t.RotateLeft(w)
+					w = x.Parent.Left
+				}
+				// Case 4: w is black, w's left child is red
+				w.Color = x.Parent.Color
+				x.Parent.Color = 'B'
+				if w.Left != t.Nil {
+					w.Left.Color = 'B'
+				}
+				t.RotateRight(x.Parent)
+				x = t.Root
+			}
+		}
+	}
+	x.Color = 'B'
+}
+
 // Remove deletes a node with the specified value from the red-black tree.
-// This method is not yet implemented.
 func (t *Tree[T]) Remove(elem T) {
-	panic("Not implemented")
+	node := t.Search(elem)
+	if node == t.Nil {
+		return
+	}
+
+	originalColor := node.Color
+
+	if node.Left == t.Nil {
+		t.transplant(node, node.Right)
+		if originalColor == 'B' {
+			t.removeFixup(node.Right)
+		}
+		return
+	}
+
+	if node.Right == t.Nil {
+		t.transplant(node, node.Left)
+		if originalColor == 'B' {
+			t.removeFixup(node.Left)
+		}
+		return
+	}
+
+	successor := t.Successor(node)
+	x := successor.Right
+	originalColor = successor.Color
+
+	if successor.Parent != node {
+		t.transplant(successor, successor.Right)
+		successor.Right = node.Right
+		successor.Right.Parent = successor
+	}
+
+	t.transplant(node, successor)
+	successor.Left = node.Left
+	successor.Left.Parent = successor
+	successor.Color = node.Color
+
+	if originalColor == 'B' {
+		t.removeFixup(x)
+	}
 }
