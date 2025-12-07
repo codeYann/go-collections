@@ -31,6 +31,9 @@ func NewNode[T any](val T) *Node[T] {
 // NewTree creates and returns a new red-black tree with the specified comparator function.
 func NewTree[T any](cmp Comparator[T]) *Tree[T] {
 	var Nil *Node[T] = &Node[T]{Color: 'B'} // define a sentinel Nil node
+	Nil.Parent = Nil
+	Nil.Left = Nil
+	Nil.Right = Nil
 	return &Tree[T]{Root: Nil, Comparator: cmp, Nil: Nil}
 }
 
@@ -270,7 +273,7 @@ func (t *Tree[T]) transplant(u, v *Node[T]) {
 // This function rebalances the tree through recoloring and rotations to maintain all red-black properties.
 // It handles four cases for each side (left and right) of the tree.
 func (t *Tree[T]) removeFixup(x *Node[T]) {
-	for x != t.Root && x.Color == 'B' {
+	for x != t.Root && x != t.Nil && x.Color == 'B' {
 		if x == x.Parent.Left {
 			w := x.Parent.Right
 			// Case 1: w is red
@@ -368,7 +371,7 @@ func (t *Tree[T]) Remove(elem T) {
 	}
 
 	successor := t.Successor(node)
-
+	x := successor.Right
 	originalColor = successor.Color
 
 	if successor.Parent != node {
@@ -383,6 +386,6 @@ func (t *Tree[T]) Remove(elem T) {
 	successor.Color = node.Color
 
 	if originalColor == 'B' {
-		t.removeFixup(successor.Right)
+		t.removeFixup(x)
 	}
 }
