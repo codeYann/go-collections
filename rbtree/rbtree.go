@@ -90,39 +90,48 @@ func (t *Tree[T]) insertFixup(z *Node[T]) {
 
 		if z.Parent == z.Parent.Parent.Left {
 			y := z.Parent.Parent.Right
+			// Case 1: y is red
 			if y != t.Nil && y.Color == 'R' {
 				z.Parent.Color = 'B'
 				y.Color = 'B'
 				z.Parent.Parent.Color = 'R'
 				z = z.Parent.Parent
 			} else {
+				// Case 2: y is black and z is right child
 				if z == z.Parent.Right {
 					z = z.Parent
 					t.RotateLeft(z)
 				}
+				// Case 3: y is black and z is left child
 				z.Parent.Color = 'B'
 				z.Parent.Parent.Color = 'R'
 				t.RotateRight(z.Parent.Parent)
 			}
 		} else {
 			y := z.Parent.Parent.Left
+			// Case 1: y is red
 			if y != t.Nil && y.Color == 'R' {
 				z.Parent.Color = 'B'
 				y.Color = 'B'
 				z.Parent.Parent.Color = 'R'
 				z = z.Parent.Parent
 			} else {
+				// Case 2: y is black and z is left child
 				if z == z.Parent.Left {
 					z = z.Parent
 					t.RotateRight(z)
 				}
+				// Case 3: y is black and z is right child
 				z.Parent.Color = 'B'
 				z.Parent.Parent.Color = 'R'
 				t.RotateLeft(z.Parent.Parent)
 			}
 		}
 	}
-	t.Root.Color = 'B'
+	// always ensure the root is black
+	if t.Root != t.Nil {
+		t.Root.Color = 'B'
+	}
 }
 
 // Insert adds a new element to the red-black tree while maintaining its properties.
